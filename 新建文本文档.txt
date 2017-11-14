@@ -1,0 +1,204 @@
+//二叉树的创建及其遍历 
+
+#include "stdio.h"
+#include "stdlib.h"
+
+//定义二叉树的结点 
+struct TreeNode{
+	char data;
+	struct TreeNode* Lchild;
+	struct TreeNode* Rchild;
+};
+
+//定义栈的结点 
+struct ListNode{
+	struct TreeNode *node;
+    struct ListNode *next;
+};
+
+typedef struct TreeNode TNode;
+typedef struct ListNode LNode; 
+
+
+//创建一个栈
+LNode* CreateList(){
+	LNode* head_list = NULL;
+    head_list = (LNode*)malloc(sizeof(LNode));
+    head_list->next = NULL;
+    return head_list;
+} 
+
+//入栈 
+void Push(LNode *head_list,TNode *root){
+	LNode *p = NULL;
+	if(root != NULL){
+		p = (LNode*)malloc(sizeof(LNode));
+		if(p != NULL){
+			p->node = root; 
+			p->next = head_list->next;
+			head_list->next = p; 
+		}else{
+			printf("申请空间失败\n");
+			return;
+		}
+	}
+}
+
+//出栈
+TNode* Pop(LNode *head_list){
+	if(head_list != NULL){
+		LNode* p = NULL;
+	    p = head_list->next;
+	    head_list->next = p->next;
+	    return p->node;
+	}else{
+		return;
+	}
+} 
+
+//取栈顶元素 
+TNode* Top(LNode *head_list){
+	if(head_list != NULL){
+		return head_list->next->node;
+	}else{
+		return;
+	}
+} 
+
+
+//创建二叉树 
+TNode* CreateTree(){
+	TNode* root;
+	char ch;
+    scanf("%c",&ch);
+    if(ch == '#'){
+    	root = NULL;
+	}else{
+		root = (TNode*)malloc(sizeof(TNode));
+		root->data = ch;
+		root->Lchild = CreateTree();
+		root->Rchild = CreateTree();
+	}
+	return root;
+} 
+
+
+//先序递归遍历 
+void Xian_Disp(TNode *root){
+	if(root){
+		printf("%c ",root->data);
+		Xian_Disp(root->Lchild);
+		Xian_Disp(root->Rchild);
+	}else{
+		return;
+	}
+}
+
+
+//先序非递归遍历
+int Xian_DispList(TNode *root,LNode *root_list){
+	TNode *p = root,*k = NULL;
+    LNode *q = root_list;
+    //如果树为空或者栈不为空则退出 
+	while(p != NULL || q->next !=NULL){
+		//一直遍历左子树 
+		if(p != NULL){
+		    printf("%c ",p->data);
+			Push(q,p);
+			p = p->Lchild;    
+		}else{
+			k = Pop(q);
+			p = k->Rchild;
+		} 
+    } 
+    return; 
+}
+ 
+
+
+//中序递归遍历 
+void Zhong_Disp(TNode *root){
+	if(root){
+		Zhong_Disp(root->Lchild);
+		printf("%c ",root->data);
+	    Zhong_Disp(root->Rchild);
+	}else{
+		return;
+	}
+}
+
+//中序非递归遍历 
+int Zhong_Display(TNode* root,LNode* root_list){
+	TNode* p = root,*k = NULL;
+	LNode* q = root_list;
+    while(p != NULL || q->next != NULL){
+    	if(p != NULL){
+    		Push(q,p);
+    		p = p->Lchild;
+		}else{
+			k = Pop(q);
+		    printf("%c ",k->data);
+		    p = k->Rchild;
+		}	
+	}
+	return;
+}
+
+//后序递归遍历 
+void Hou_Disp(TNode *root){
+	if(root){
+		Hou_Disp(root->Lchild);
+		Hou_Disp(root->Rchild);
+		printf("%c ",root->data);
+	}
+}
+
+
+//后序非递归遍历
+int Hou_Display(TNode *root,LNode *root_list){
+	TNode* p = root,*k = NULL,*w = NULL;
+	LNode* q = root_list;
+    while(p != NULL || q->next != NULL){
+	    if(p != NULL){
+	    	Push(q,p);
+	    	p = p->Lchild;
+		}else{
+			p = Top(root_list);
+			//如果右孩子为空，或者右孩子被访问了 
+			if(p->Rchild == NULL || p->Rchild == w){
+				k = Pop(root_list);					
+			    printf("%c ",k->data);
+			    w = p;
+			    p = NULL;
+			}else{
+				p = p->Rchild;
+			}
+		}
+	}
+} 
+
+int main(){
+	TNode *root;
+	LNode *root_list;
+	root = CreateTree();       //创建一棵树 
+	root_list = CreateList(); 
+	Xian_Disp(root);	       //先序递归遍历 
+	printf("\n");   
+	Xian_DispList(root,root_list);	   //先序非递归遍历 
+	printf("\n");   
+	Zhong_Disp(root);         //中序递归遍历 
+    printf("\n");
+	Zhong_Display(root,root_list);
+	printf("\n");
+	Hou_Disp(root);        //后序递归遍历 
+	printf("\n");
+	Hou_Display(root,root_list);
+	printf("\n");
+	return;
+}
+
+
+
+
+
+
